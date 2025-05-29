@@ -216,8 +216,19 @@ a:hover {
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--gray-200);
   z-index: 1000;
-  transition: all var(--transition-normal);
+  transition: transform var(--transition-normal),
+    opacity var(--transition-normal);
   animation: slideDown 0.8s ease-out;
+}
+
+.header.header-hidden {
+  transform: translateY(-100%);
+  opacity: 0;
+}
+
+.header.header-visible {
+  transform: translateY(0);
+  opacity: 1;
 }
 
 @keyframes slideDown {
@@ -1707,4 +1718,11 @@ textarea:focus {
     transform: translateY(0);
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
   }
+}
+
+/* Ensure header stays visible when mobile menu is open */
+.nav-menu.active ~ .header,
+.header:has(.nav-menu.active) {
+  transform: translateY(0) !important;
+  opacity: 1 !important;
 }

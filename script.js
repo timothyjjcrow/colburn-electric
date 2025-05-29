@@ -411,3 +411,61 @@ document.addEventListener("DOMContentLoaded", function () {
 
   window.addEventListener("scroll", updateActiveNavLink);
 });
+
+// Smart Navigation - Hide on scroll down, show on scroll up
+document.addEventListener("DOMContentLoaded", function () {
+  const header = document.querySelector(".header");
+  const navMenu = document.querySelector(".nav-menu");
+  let lastScrollTop = 0;
+  let scrollThreshold = 5; // Minimum scroll distance to trigger hide/show
+  let isScrolling = false;
+
+  function handleScroll() {
+    if (!isScrolling) {
+      window.requestAnimationFrame(function () {
+        const currentScrollTop =
+          window.pageYOffset || document.documentElement.scrollTop;
+        const scrollDifference = Math.abs(currentScrollTop - lastScrollTop);
+        const isMobileMenuOpen =
+          navMenu && navMenu.classList.contains("active");
+
+        // Don't hide header if mobile menu is open
+        if (isMobileMenuOpen) {
+          header.classList.remove("header-hidden");
+          header.classList.add("header-visible");
+          isScrolling = false;
+          return;
+        }
+
+        // Only trigger if scroll difference is greater than threshold
+        if (scrollDifference > scrollThreshold) {
+          if (currentScrollTop > lastScrollTop && currentScrollTop > 100) {
+            // Scrolling down & past hero section
+            header.classList.add("header-hidden");
+            header.classList.remove("header-visible");
+          } else {
+            // Scrolling up or at top
+            header.classList.remove("header-hidden");
+            header.classList.add("header-visible");
+          }
+          lastScrollTop = currentScrollTop;
+        }
+
+        isScrolling = false;
+      });
+    }
+    isScrolling = true;
+  }
+
+  // Throttled scroll event listener
+  let scrollTimeout;
+  window.addEventListener("scroll", function () {
+    if (scrollTimeout) {
+      clearTimeout(scrollTimeout);
+    }
+    scrollTimeout = setTimeout(handleScroll, 10);
+  });
+
+  // Always show header on page load
+  header.classList.add("header-visible");
+});
