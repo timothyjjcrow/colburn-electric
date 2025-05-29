@@ -216,19 +216,8 @@ a:hover {
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--gray-200);
   z-index: 1000;
-  transition: transform var(--transition-normal),
-    opacity var(--transition-normal);
+  transition: all var(--transition-normal);
   animation: slideDown 0.8s ease-out;
-}
-
-.header.header-hidden {
-  transform: translateY(-100%);
-  opacity: 0;
-}
-
-.header.header-visible {
-  transform: translateY(0);
-  opacity: 1;
 }
 
 @keyframes slideDown {
@@ -1237,7 +1226,8 @@ a:hover {
     transform: translateY(-100%);
     opacity: 0;
     visibility: hidden;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out,
+      visibility 0.3s ease-in-out;
     backdrop-filter: blur(10px);
     z-index: 999;
   }
@@ -1251,35 +1241,43 @@ a:hover {
   /* Animate individual menu items */
   .nav-menu .nav-link,
   .nav-menu .nav-cta {
-    opacity: 0;
-    transform: translateY(20px);
     transition: all 0.3s ease-out;
   }
 
   .nav-menu.active .nav-link,
   .nav-menu.active .nav-cta {
-    opacity: 1;
-    transform: translateY(0);
+    animation: fadeInStagger 0.4s ease-out forwards;
   }
 
   /* Stagger animation for menu items */
   .nav-menu.active .nav-link:nth-child(1) {
-    transition-delay: 0.1s;
+    animation-delay: 0.1s;
   }
   .nav-menu.active .nav-link:nth-child(2) {
-    transition-delay: 0.15s;
+    animation-delay: 0.15s;
   }
   .nav-menu.active .nav-link:nth-child(3) {
-    transition-delay: 0.2s;
+    animation-delay: 0.2s;
   }
   .nav-menu.active .nav-link:nth-child(4) {
-    transition-delay: 0.25s;
+    animation-delay: 0.25s;
   }
   .nav-menu.active .nav-link:nth-child(5) {
-    transition-delay: 0.3s;
+    animation-delay: 0.3s;
   }
   .nav-menu.active .nav-cta {
-    transition-delay: 0.35s;
+    animation-delay: 0.35s;
+  }
+
+  @keyframes fadeInStagger {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   /* Enhanced Hamburger Animation */
@@ -1381,29 +1379,6 @@ a:hover {
   .nav-menu.active::before {
     opacity: 1;
     visibility: visible;
-  }
-
-  /* Add bounce effect to menu opening */
-  .nav-menu.active {
-    transform: translateY(0);
-    opacity: 1;
-    visibility: visible;
-    animation: mobileMenuBounce 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  }
-
-  @keyframes mobileMenuBounce {
-    0% {
-      transform: translateY(-100%) scale(0.8);
-      opacity: 0;
-    }
-    60% {
-      transform: translateY(5%) scale(1.02);
-      opacity: 0.8;
-    }
-    100% {
-      transform: translateY(0) scale(1);
-      opacity: 1;
-    }
   }
 
   .hero {
