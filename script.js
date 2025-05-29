@@ -1,15 +1,8 @@
-// Enhanced Mobile Navigation Toggle with Animations and Smart Navigation
+// Enhanced Mobile Navigation Toggle with Animations
 document.addEventListener("DOMContentLoaded", function () {
   const navToggle = document.getElementById("nav-toggle");
   const navMenu = document.getElementById("nav-menu");
-  const header = document.querySelector(".header");
   const body = document.body;
-
-  // Smart Navigation Variables
-  let lastScrollTop = 0;
-  let scrollThreshold = 5;
-  let isScrolling = false;
-  let isMobileMenuOpen = false;
 
   // Create backdrop overlay
   const backdrop = document.createElement("div");
@@ -42,18 +35,11 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   function openMenu() {
-    isMobileMenuOpen = true;
     navToggle.classList.add("active");
     navMenu.classList.add("active");
     backdrop.style.opacity = "1";
     backdrop.style.visibility = "visible";
-    body.style.overflow = "hidden";
-
-    // Ensure header is visible when menu opens
-    header.classList.remove("header-hidden");
-    header.classList.add("header-visible");
-    header.style.transform = "translateY(0)";
-    header.style.opacity = "1";
+    body.style.overflow = "hidden"; // Prevent scrolling when menu is open
 
     // Add stagger animation to menu items
     const menuItems = navMenu.querySelectorAll(".nav-link, .nav-cta");
@@ -63,12 +49,11 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function closeMenu() {
-    isMobileMenuOpen = false;
     navToggle.classList.remove("active");
     navMenu.classList.remove("active");
     backdrop.style.opacity = "0";
     backdrop.style.visibility = "hidden";
-    body.style.overflow = "";
+    body.style.overflow = ""; // Restore scrolling
 
     // Reset transition delays
     const menuItems = navMenu.querySelectorAll(".nav-link, .nav-cta");
@@ -77,50 +62,18 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Smart Navigation Function
-  function handleScroll() {
-    if (!isScrolling) {
-      window.requestAnimationFrame(function () {
-        const currentScrollTop =
-          window.pageYOffset || document.documentElement.scrollTop;
-        const scrollDifference = Math.abs(currentScrollTop - lastScrollTop);
-
-        // Don't hide header if mobile menu is open
-        if (isMobileMenuOpen) {
-          isScrolling = false;
-          return;
-        }
-
-        // Only trigger if scroll difference is greater than threshold
-        if (scrollDifference > scrollThreshold) {
-          if (currentScrollTop > lastScrollTop && currentScrollTop > 100) {
-            // Scrolling down & past hero section
-            header.classList.add("header-hidden");
-            header.classList.remove("header-visible");
-          } else {
-            // Scrolling up or at top
-            header.classList.remove("header-hidden");
-            header.classList.add("header-visible");
-          }
-          lastScrollTop = currentScrollTop;
-        }
-
-        isScrolling = false;
-      });
-    }
-    isScrolling = true;
-  }
-
-  // Event Listeners
+  // Close mobile menu when clicking on nav links
   const navLinks = document.querySelectorAll(".nav-link");
   navLinks.forEach((link) => {
     link.addEventListener("click", () => {
-      setTimeout(closeMenu, 150);
+      setTimeout(closeMenu, 150); // Small delay for better UX
     });
   });
 
+  // Close mobile menu when clicking backdrop
   backdrop.addEventListener("click", closeMenu);
 
+  // Close mobile menu when clicking outside
   document.addEventListener("click", function (event) {
     const isClickInsideNav =
       navMenu.contains(event.target) || navToggle.contains(event.target);
@@ -129,29 +82,69 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
+  // Close menu on escape key
   document.addEventListener("keydown", function (event) {
     if (event.key === "Escape" && navMenu.classList.contains("active")) {
       closeMenu();
     }
   });
 
+  // Handle window resize
   window.addEventListener("resize", function () {
     if (window.innerWidth > 768 && navMenu.classList.contains("active")) {
       closeMenu();
     }
   });
+});
 
-  // Smart Navigation Scroll Listener
-  let scrollTimeout;
-  window.addEventListener("scroll", function () {
-    if (scrollTimeout) {
-      clearTimeout(scrollTimeout);
+// Navigation Bar Hide/Show on Scroll
+document.addEventListener("DOMContentLoaded", function () {
+  const header = document.querySelector(".header");
+  let lastScrollTop = 0;
+  let scrollThreshold = 100; // Minimum scroll distance to trigger hide/show
+  let ticking = false;
+
+  function updateNavBar() {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+    // Only trigger after scrolling past threshold
+    if (scrollTop < scrollThreshold) {
+      header.classList.remove("header-hidden");
+      return;
     }
-    scrollTimeout = setTimeout(handleScroll, 10);
-  });
 
-  // Initialize header as visible
-  header.classList.add("header-visible");
+    // Determine scroll direction
+    if (scrollTop > lastScrollTop && scrollTop > scrollThreshold) {
+      // Scrolling down - hide navbar
+      header.classList.add("header-hidden");
+    } else if (scrollTop < lastScrollTop) {
+      // Scrolling up - show navbar
+      header.classList.remove("header-hidden");
+    }
+
+    lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // For Mobile or negative scrolling
+    ticking = false;
+  }
+
+  function requestTick() {
+    if (!ticking) {
+      requestAnimationFrame(updateNavBar);
+      ticking = true;
+    }
+  }
+
+  // Throttled scroll event listener for better performance
+  window.addEventListener("scroll", requestTick, { passive: true });
+
+  // Always show navbar when mobile menu is open
+  const navToggle = document.getElementById("nav-toggle");
+  if (navToggle) {
+    navToggle.addEventListener("click", function () {
+      if (navToggle.classList.contains("active")) {
+        header.classList.remove("header-hidden");
+      }
+    });
+  }
 });
 
 // Gallery Carousel Functionality
