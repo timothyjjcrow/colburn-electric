@@ -1719,10 +1719,3 @@ textarea:focus {
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
   }
 }
-
-/* Ensure header stays visible when mobile menu is open */
-.nav-menu.active ~ .header,
-.header:has(.nav-menu.active) {
-  transform: translateY(0) !important;
-  opacity: 1 !important;
-}
